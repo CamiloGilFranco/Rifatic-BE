@@ -31,6 +31,6 @@ const usersSchema = new Schema(
   }
 );
 
-const users = model("admins", usersSchema);
+const users = model("users", usersSchema);
 
 module.exports = users;

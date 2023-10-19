@@ -19,8 +19,13 @@ module.exports = {
 
   async findDonation(req, res) {
     try {
-      const { coupon } = req.query;
-      const data = await donations.find({ _id: coupon });
+      if (req.user.role !== "admin") {
+        throw new Error("operation not allowed");
+      }
+
+      const { id } = req.query;
+      console.log(id);
+      const data = await donations.findOne({ _id: id });
 
       res.status(200).json({
         message: "donation found",
@@ -37,6 +42,10 @@ module.exports = {
 
   async findAllDonation(req, res) {
     try {
+      if (req.user.role !== "admin") {
+        throw new Error("operation not allowed");
+      }
+
       const allDonations = await donations.find();
 
       res.status(200).json({

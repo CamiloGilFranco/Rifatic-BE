@@ -48,7 +48,13 @@ const loginController = async (req, res) => {
       throw new Error("Email o contraseña incorrecta");
     }
 
-    const token = signToken({ id: user.id });
+    console.log(user);
+
+    const token = signToken({
+      id: user.id,
+      state: user.state,
+      role: user.role,
+    });
 
     res.status(201).json({
       message: "User found",
