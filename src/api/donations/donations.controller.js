@@ -3,7 +3,8 @@ const donations = require("./donations.model");
 module.exports = {
   async createDonation(req, res) {
     try {
-      //
+      await donations.create(req.body);
+
       res.status(200).json({
         message: "donation created",
       });
@@ -18,9 +19,12 @@ module.exports = {
 
   async findDonation(req, res) {
     try {
-      //
+      const { coupon } = req.query;
+      const data = await donations.find({ _id: coupon });
+
       res.status(200).json({
         message: "donation found",
+        data,
       });
     } catch (error) {
       console.log(error);
@@ -33,9 +37,11 @@ module.exports = {
 
   async findAllDonation(req, res) {
     try {
-      //
+      const allDonations = await donations.find();
+
       res.status(200).json({
         message: "donations found",
+        data: allDonations,
       });
     } catch (error) {
       console.log(error);
