@@ -8,6 +8,10 @@ const usersSchema = new Schema(
     password: { type: String, required: true },
     state: { type: String, required: true },
     role: { type: String, required: true },
+    reports: {
+      type: [{ type: Schema.Types.ObjectId, ref: "report" }],
+      required: false,
+    },
     email: {
       type: String,
       required: true,
