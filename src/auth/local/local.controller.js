@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const users = require("../../api/users/users.model");
 const { signToken, login } = require("../auth.services");
+const generarId = require("../../helpers/RandomID");
 
 newUserController = async (req, res) => {
   try {
@@ -8,8 +9,9 @@ newUserController = async (req, res) => {
 
     const encPassword = await bcrypt.hash(password, 10);
 
-    const state = "active";
+    const state = "not validated";
     const role = "regular user";
+    const secureCode = generarId();
 
     const user = await users.create({
       name,
@@ -19,13 +21,20 @@ newUserController = async (req, res) => {
       password: encPassword,
       state,
       role,
+      secure_code: secureCode,
     });
 
-    const token = signToken({ id: user._id });
+    setTimeout(async () => {
+      const createdUser = await users.findById(user._id);
+      if (createdUser.state === "not validated") {
+        await users.findByIdAndDelete(user._id);
+      }
+      console.log("end");
+    }, 300000);
 
     res.status(201).json({
       message: "User created",
-      data: { email, name, last_name, phone, state, role, token },
+      code: secureCode,
     });
   } catch (error) {
     console.log(error);

@@ -16,7 +16,7 @@ const usersSchema = new Schema(
     email: {
       type: String,
       required: true,
-      validate: [
+      /* validate: [
         {
           async validator(value) {
             try {
@@ -27,7 +27,7 @@ const usersSchema = new Schema(
             }
           },
         },
-      ],
+      ], */
     },
   },
   {
