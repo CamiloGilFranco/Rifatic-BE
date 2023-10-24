@@ -1,7 +1,11 @@
 const bcrypt = require("bcrypt");
 const users = require("../../api/users/users.model");
-const { signToken, login } = require("../auth.services");
+const { signToken, login, verifyToken } = require("../auth.services");
 const generarId = require("../../helpers/RandomID");
+const { sendNodeMailer } = require("../../config/nodemailer");
+const { verifyUserEmail } = require("../../utils/emails");
+
+const key = process.env.SECRET_KEY;
 
 newUserController = async (req, res) => {
   try {
@@ -24,17 +28,51 @@ newUserController = async (req, res) => {
       secure_code: secureCode,
     });
 
+    await sendNodeMailer(verifyUserEmail({ name, email, secureCode }));
+
     setTimeout(async () => {
       const createdUser = await users.findById(user._id);
       if (createdUser.state === "not validated") {
         await users.findByIdAndDelete(user._id);
       }
-      console.log("end");
     }, 300000);
+
+    const token = signToken({ id: user._id }, key);
 
     res.status(201).json({
       message: "User created",
-      code: secureCode,
+      token,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: error.message });
+  }
+};
+
+const verifyNewUser = async (req, res) => {
+  try {
+    const { token, verificationCode } = req.body;
+    const decoded = verifyToken(token);
+
+    const user = await users.findById(decoded.id);
+
+    if (!user) {
+      throw new Error(
+        "El código de verificación expiró, debes registrarte de nuevo"
+      );
+    }
+
+    if (user.secure_code !== verificationCode) {
+      throw new Error("El código de verificación es incorrecto");
+    }
+
+    await users.findByIdAndUpdate(decoded.id, {
+      secure_code: "",
+      state: "active",
+    });
+
+    res.status(201).json({
+      message: "User verified",
     });
   } catch (error) {
     console.log(error);
@@ -57,8 +95,6 @@ const loginController = async (req, res) => {
       throw new Error("Email o contraseña incorrecta");
     }
 
-    console.log(user);
-
     const token = signToken({
       id: user.id,
       state: user.state,
@@ -76,4 +112,5 @@ const loginController = async (req, res) => {
 };
 
 module.exports.newUserController = newUserController;
+module.exports.verifyNewUser = verifyNewUser;
 module.exports.loginController = loginController;

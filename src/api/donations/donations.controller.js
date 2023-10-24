@@ -24,7 +24,6 @@ module.exports = {
       }
 
       const { id } = req.query;
-      console.log(id);
       const data = await donations.findOne({ _id: id });
 
       res.status(200).json({
