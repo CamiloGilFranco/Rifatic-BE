@@ -103,7 +103,7 @@ const loginController = async (req, res) => {
 
     res.status(201).json({
       message: "User found",
-      data: { token },
+      data: { token, email, role: user.role },
     });
   } catch (error) {
     console.log(error);
