@@ -25,7 +25,8 @@ newUserController = async (req, res) => {
       password: encPassword,
       state,
       role,
-      secure_code: secureCode,
+      path: secureCode,
+      secure_code: secureCode.slice(-6),
     });
 
     await sendNodeMailer(verifyUserEmail({ name, email, secureCode }));
@@ -103,7 +104,7 @@ const loginController = async (req, res) => {
 
     res.status(201).json({
       message: "User found",
-      data: { token, email, role: user.role },
+      data: { token, email, role: user.role, path: user.path },
     });
   } catch (error) {
     console.log(error);

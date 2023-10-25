@@ -9,6 +9,7 @@ const usersSchema = new Schema(
     state: { type: String, required: true },
     role: { type: String, required: true },
     secure_code: { type: String },
+    path: { type: String },
     reports: {
       type: [{ type: Schema.Types.ObjectId, ref: "report" }],
       required: false,
@@ -16,7 +17,7 @@ const usersSchema = new Schema(
     email: {
       type: String,
       required: true,
-      /* validate: [
+      validate: [
         {
           async validator(value) {
             try {
@@ -27,7 +28,7 @@ const usersSchema = new Schema(
             }
           },
         },
-      ], */
+      ],
     },
   },
   {

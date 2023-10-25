@@ -4,7 +4,7 @@ const generarId = () => {
 
   const code = random + fecha;
 
-  return code.slice(-6);
+  return code;
 };
 
 module.exports = generarId;
