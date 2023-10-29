@@ -10,6 +10,10 @@ const usersSchema = new Schema(
     role: { type: String, required: true },
     secure_code: { type: String },
     path: { type: String },
+    giveaways: {
+      type: [{ type: Schema.Types.ObjectId, ref: "giveaways" }],
+      required: false,
+    },
 
     email: {
       type: String,

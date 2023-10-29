@@ -13,6 +13,11 @@ const giveawaysSchema = new Schema({
   lottery: { type: String },
   state: { type: String, required: true },
   winning_number: { type: String },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "users",
+    required: true,
+  },
 });
 
 const giveaways = model("giveaways", giveawaysSchema);
