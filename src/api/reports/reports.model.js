@@ -7,11 +7,6 @@ const reportsSchema = new Schema(
     description: { type: String, required: true },
     report_state: { type: String, required: true },
     response: { type: String },
-    user: {
-      type: Schema.Types.ObjectId,
-      ref: "user",
-      required: true,
-    },
   },
   {
     timestamps: true,

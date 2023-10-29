@@ -10,10 +10,7 @@ const usersSchema = new Schema(
     role: { type: String, required: true },
     secure_code: { type: String },
     path: { type: String },
-    reports: {
-      type: [{ type: Schema.Types.ObjectId, ref: "report" }],
-      required: false,
-    },
+
     email: {
       type: String,
       required: true,
