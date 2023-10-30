@@ -1,4 +1,4 @@
-const { Schema, model, models } = require("mongoose");
+const { Schema, model } = require("mongoose");
 
 const giveawaysSchema = new Schema({
   title: { type: String, required: true },
@@ -9,7 +9,6 @@ const giveawaysSchema = new Schema({
   draw_date: { type: String, required: true },
   ticket_price: { type: String },
   number_of_digits: { type: String },
-  tickets_sold: { type: String },
   lottery: { type: String },
   state: { type: String, required: true },
   winning_number: { type: String },
