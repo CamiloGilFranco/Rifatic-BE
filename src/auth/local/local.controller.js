@@ -15,7 +15,7 @@ newUserController = async (req, res) => {
 
     const state = "not validated";
     const role = "regular user";
-    const secureCode = generarId();
+    const secureCode = generarId().toUpperCase().slice(-6);
 
     const user = await users.create({
       name,
@@ -26,7 +26,7 @@ newUserController = async (req, res) => {
       state,
       role,
       path: secureCode,
-      secure_code: secureCode.slice(-6),
+      secure_code: secureCode,
     });
 
     await sendNodeMailer(verifyUserEmail({ name, email, secureCode }));
