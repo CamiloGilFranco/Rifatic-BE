@@ -20,9 +20,9 @@ const auth = (req, res, next) => {
       throw new Error("Invalid token, please log in again");
     }
 
-    const { id } = verifyToken(token);
+    const dataToken = verifyToken(token);
 
-    req.user = id;
+    req.user = dataToken;
 
     next();
   } catch (error) {

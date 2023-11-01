@@ -3,7 +3,8 @@ const donations = require("./donations.model");
 module.exports = {
   async createDonation(req, res) {
     try {
-      //
+      await donations.create(req.body);
+
       res.status(200).json({
         message: "donation created",
       });
@@ -18,9 +19,16 @@ module.exports = {
 
   async findDonation(req, res) {
     try {
-      //
+      if (req.user.role !== "admin") {
+        throw new Error("operation not allowed");
+      }
+
+      const { id } = req.query;
+      const data = await donations.findOne({ _id: id });
+
       res.status(200).json({
         message: "donation found",
+        data,
       });
     } catch (error) {
       console.log(error);
@@ -33,9 +41,15 @@ module.exports = {
 
   async findAllDonation(req, res) {
     try {
-      //
+      if (req.user.role !== "admin") {
+        throw new Error("operation not allowed");
+      }
+
+      const allDonations = await donations.find();
+
       res.status(200).json({
         message: "donations found",
+        data: allDonations,
       });
     } catch (error) {
       console.log(error);
