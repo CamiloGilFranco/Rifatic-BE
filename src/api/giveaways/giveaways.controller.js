@@ -94,8 +94,6 @@ module.exports = {
       const { id, state } = req.body;
       const { user } = req;
 
-      console.log(user);
-
       const giveaway = await giveaways.findById(id);
 
       if (user.role !== "admin" && user.id !== giveaway.user.toString()) {
@@ -111,6 +109,44 @@ module.exports = {
       res.status(200).json({
         message: "giveaway updated",
         updatedGiveaway,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "giveaway couldn't be updated",
+        data: error.message,
+      });
+    }
+  },
+
+  async finishGiveaway(req, res) {
+    try {
+      const { lottery, draw_date, winning_number } = req.body;
+      const { user } = req;
+
+      if (user.role !== "admin") {
+        throw new Error("operation not allowed");
+      }
+
+      const participatingGiveaway = await giveaways.find({
+        lottery,
+        draw_date,
+      });
+
+      participatingGiveaway.map(async (giveaway) => {
+        const numberOfDigits = parseInt(giveaway.number_of_digits);
+
+        const winningNumber = winning_number.slice(-numberOfDigits);
+
+        const updatedGiveaway = await giveaways.findByIdAndUpdate(
+          giveaway.id,
+          { state: "finished", winning_number: winningNumber },
+          { new: true }
+        );
+      });
+
+      res.status(200).json({
+        message: "giveaway updated",
       });
     } catch (error) {
       console.log(error);
