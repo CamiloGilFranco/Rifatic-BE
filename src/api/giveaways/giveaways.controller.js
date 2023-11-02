@@ -89,19 +89,29 @@ module.exports = {
     }
   },
 
-  async findAllActiveGiveaways(req, res) {
-    try {
-    } catch (error) {
-      console.log(error);
-      res.status(500).json({
-        message: "giveaways couldn't be found",
-        data: error.message,
-      });
-    }
-  },
-
   async updateStateGiveaway(req, res) {
     try {
+      const { id, state } = req.body;
+      const { user } = req;
+
+      console.log(user);
+
+      const giveaway = await giveaways.findById(id);
+
+      if (user.role !== "admin" && user.id !== giveaway.user.toString()) {
+        throw new Error("operation not allowed");
+      }
+
+      const updatedGiveaway = await giveaways.findByIdAndUpdate(
+        id,
+        { state },
+        { new: true }
+      );
+
+      res.status(200).json({
+        message: "giveaway updated",
+        updatedGiveaway,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({
