@@ -53,6 +53,16 @@ module.exports = {
 
   async findOneGiveaway(req, res) {
     try {
+      const { id } = req.query;
+
+      const giveawayData = await giveaways
+        .findById(id)
+        .populate({ path: "user", select: "name last_name phone -_id" });
+
+      res.status(200).json({
+        message: "giveaway found",
+        giveawayData,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({
