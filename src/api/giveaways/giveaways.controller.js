@@ -4,17 +4,10 @@ const users = require("../users/users.model");
 module.exports = {
   async createGiveaway(req, res) {
     try {
-      console.log(req.user);
+      const { title, description, image, draw_date, lottery } = req.body;
 
-      const {
-        title,
-        description,
-        image,
-        draw_date,
-        ticket_price,
-        number_of_digits,
-        lottery,
-      } = req.body;
+      const ticket_price = parseInt(req.body.ticket_price);
+      const number_of_digits = parseInt(req.body.number_of_digits);
 
       if (req.user.state === "inactive") {
         throw new Error("user disabled ");
@@ -39,6 +32,7 @@ module.exports = {
         ticket_price,
         number_of_digits,
         lottery,
+        state: "in progress",
         user: req.user.id,
       });
 
