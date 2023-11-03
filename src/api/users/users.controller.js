@@ -71,7 +71,7 @@ module.exports = {
         .populate({ path: "giveaways", select: "-user" });
 
       res.status(200).json({
-        message: "user found",
+        message: "user deactivated",
         deactivatedUser,
       });
     } catch (error) {
@@ -85,6 +85,21 @@ module.exports = {
 
   async reactivateUser(req, res) {
     try {
+      const { user } = req;
+      const { email } = req.body;
+
+      if (user.role !== "admin") {
+        throw new Error("operation not allowed");
+      }
+
+      const deactivatedUser = await users
+        .findOneAndUpdate({ email }, { state: "active" }, { new: true })
+        .populate({ path: "giveaways", select: "-user" });
+
+      res.status(200).json({
+        message: "user reactivated",
+        deactivatedUser,
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({
