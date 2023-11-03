@@ -14,7 +14,6 @@ const usersSchema = new Schema(
       type: [{ type: Schema.Types.ObjectId, ref: "giveaways" }],
       required: false,
     },
-
     email: {
       type: String,
       required: true,
