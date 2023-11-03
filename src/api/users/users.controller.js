@@ -92,13 +92,13 @@ module.exports = {
         throw new Error("operation not allowed");
       }
 
-      const deactivatedUser = await users
+      const reactivatedUser = await users
         .findOneAndUpdate({ email }, { state: "active" }, { new: true })
         .populate({ path: "giveaways", select: "-user" });
 
       res.status(200).json({
         message: "user reactivated",
-        deactivatedUser,
+        reactivatedUser,
       });
     } catch (error) {
       console.log(error);
@@ -109,8 +109,25 @@ module.exports = {
     }
   },
 
+  async changeUserRole(req, res) {
+    try {
+      res.status(200).json({
+        message: "user updated",
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "user role couldn't be updated",
+        data: error.message,
+      });
+    }
+  },
+
   async updatePersonalData(req, res) {
     try {
+      res.status(200).json({
+        message: "user updated",
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({
@@ -120,12 +137,15 @@ module.exports = {
     }
   },
 
-  async changeUserRole(req, res) {
+  async updatePassword(req, res) {
     try {
+      res.status(200).json({
+        message: "password updated",
+      });
     } catch (error) {
       console.log(error);
       res.status(500).json({
-        message: "user role couldn't be updated",
+        message: "password couldn't be updated",
         data: error.message,
       });
     }
