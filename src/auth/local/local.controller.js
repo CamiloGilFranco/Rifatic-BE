@@ -100,6 +100,7 @@ const loginController = async (req, res) => {
       id: user.id,
       state: user.state,
       role: user.role,
+      path: user.path,
     });
 
     res.status(201).json({

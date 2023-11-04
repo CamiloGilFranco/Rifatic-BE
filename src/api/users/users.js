@@ -5,7 +5,7 @@ const usersController = require("./users.controller");
 const router = Router();
 
 router.get("/", auth, usersController.findAllUsers);
-router.get("/user", auth, usersController.findOneUser);
+router.get("/path", auth, usersController.findUserByPath);
 router.put("/deactivate", auth, usersController.deactivateUser);
 router.put("/reactivate", auth, usersController.reactivateUser);
 router.put("/data", auth, usersController.updatePersonalData);

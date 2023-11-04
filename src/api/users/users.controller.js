@@ -26,24 +26,31 @@ module.exports = {
     }
   },
 
-  async findOneUser(req, res) {
+  async findUserByPath(req, res) {
     try {
       const { user } = req;
+      const { path } = req.query;
 
-      const userFound = await users
-        .findById(user.id)
+      const userFound = await users.findById(user.id);
+
+      if (userFound.path !== path) {
+        throw new Error("operation not allowed");
+      }
+
+      const userData = await users
+        .findOne({ path })
         .populate({ path: "giveaways", select: "-user" });
 
       res.status(200).json({
         message: "user found",
         userData: {
-          name: userFound.name,
-          last_name: userFound.last_name,
-          phone: userFound.phone,
-          state: userFound.state,
-          role: userFound.role,
-          email: userFound.email,
-          giveaways: userFound.giveaways,
+          name: userData.name,
+          last_name: userData.last_name,
+          phone: userData.phone,
+          state: userData.state,
+          role: userData.role,
+          email: userData.email,
+          giveaways: userData.giveaways,
         },
       });
     } catch (error) {
