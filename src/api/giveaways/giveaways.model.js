@@ -9,6 +9,7 @@ const giveawaysSchema = new Schema({
   ticket_price: { type: String },
   number_of_digits: { type: String },
   lottery: { type: String },
+  show_phone: { type: Boolean },
   state: { type: String, required: true },
   winning_number: { type: String },
   user: {
