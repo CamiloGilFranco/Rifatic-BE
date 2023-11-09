@@ -4,7 +4,8 @@ const users = require("../users/users.model");
 module.exports = {
   async createGiveaway(req, res) {
     try {
-      const { title, description, image, draw_date, lottery } = req.body;
+      const { title, description, image, draw_date, lottery, show_phone } =
+        req.body;
 
       const ticket_price = parseInt(req.body.ticket_price);
       const number_of_digits = parseInt(req.body.number_of_digits);
@@ -32,6 +33,7 @@ module.exports = {
         ticket_price,
         number_of_digits,
         lottery,
+        show_phone,
         state: "in progress",
         user: req.user.id,
       });
@@ -41,6 +43,7 @@ module.exports = {
 
       res.status(200).json({
         message: "giveaway created",
+        newGiveaway,
       });
     } catch (error) {
       console.log(error);
