@@ -32,7 +32,7 @@ const formData = (req, res, next) => {
     uploadingFile = true;
     uploadingCount++;
     const cloud = cloudinary.uploader.upload_stream(
-      { upload_preset: "tacanaire" },
+      { upload_preset: "RIFATIC" },
       (err, res) => {
         if (err) throw new Error("Something error wrong !");
 

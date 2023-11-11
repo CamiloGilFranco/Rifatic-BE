@@ -100,6 +100,7 @@ const loginController = async (req, res) => {
       id: user.id,
       state: user.state,
       role: user.role,
+      path: user.path,
     });
 
     res.status(201).json({
@@ -112,6 +113,21 @@ const loginController = async (req, res) => {
   }
 };
 
+const restorePassword = async (req, res) => {
+  try {
+    res.status(200).json({
+      message: "password restored",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "password couldn't be restored",
+      data: error.message,
+    });
+  }
+};
+
 module.exports.newUserController = newUserController;
 module.exports.verifyNewUser = verifyNewUser;
 module.exports.loginController = loginController;
+module.exports.restorePassword = restorePassword;
