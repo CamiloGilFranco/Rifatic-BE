@@ -17,6 +17,15 @@ const giveawaysSchema = new Schema({
     ref: "users",
     required: true,
   },
+  sold_tickets: {
+    type: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "soldTickets",
+      },
+    ],
+    required: false,
+  },
 });
 
 const giveaways = model("giveaways", giveawaysSchema);
