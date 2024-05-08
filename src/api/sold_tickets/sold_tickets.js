@@ -1,17 +1,10 @@
-const { Schema, model } = require("mongoose");
+const Router = require("express");
+const { auth } = require("../../middlewares/auth");
+const { formData } = require("../../middlewares/formData");
+const soldTicketsController = require("./sold_tickets.controller");
 
-const soldTicketsSchema = new Schema({
-  full_name: { type: String, required: true },
-  phone_number: { type: String, required: true },
-  email: { type: String, required: true },
-  selected_number: { type: String, required: true },
-  giveaway: {
-    type: Schema.Types.ObjectId,
-    ref: "giveaways",
-    required: true,
-  },
-});
+const router = Router();
 
-const soldTickets = model("soldTickets", soldTicketsSchema);
+router.post("/", auth, soldTicketsController.sellTickets);
 
-module.exports = soldTickets;
+module.exports = router;

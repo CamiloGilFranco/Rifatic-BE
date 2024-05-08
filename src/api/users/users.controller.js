@@ -74,7 +74,7 @@ module.exports = {
       }
 
       const deactivatedUser = await users
-        .findOneAndUpdate({ email }, { state: "disabled" }, { new: true })
+        .findOneAndUpdate({ email }, { state: "inactive" }, { new: true })
         .populate({ path: "giveaways", select: "-user" });
 
       res.status(200).json({
