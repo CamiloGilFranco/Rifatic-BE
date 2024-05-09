@@ -58,11 +58,13 @@ module.exports = {
     try {
       const { id } = req.query;
 
-      console.log("poihoijhdf");
-
       const giveawayData = await giveaways
         .findById(id)
-        .populate({ path: "user", select: "name last_name phone -_id" });
+        .populate({ path: "user", select: "name last_name phone -_id" })
+        .populate({
+          path: "sold_tickets",
+          select: "full_name phone_number email selected_number -_id",
+        });
 
       res.status(200).json({
         message: "giveaway found",
