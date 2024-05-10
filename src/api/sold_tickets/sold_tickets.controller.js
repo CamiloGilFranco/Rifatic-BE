@@ -64,4 +64,20 @@ module.exports = {
       });
     }
   },
+
+  async releaseTicket(req, res) {
+    try {
+      console.log("we are fucking here");
+
+      res.status(200).json({
+        message: "tickets released",
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "ticket couldn't be released",
+        data: error.message,
+      });
+    }
+  },
 };

@@ -6,5 +6,6 @@ const soldTicketsController = require("./sold_tickets.controller");
 const router = Router();
 
 router.post("/", auth, soldTicketsController.sellTickets);
+router.delete("/", auth, soldTicketsController.releaseTicket);
 
 module.exports = router;
