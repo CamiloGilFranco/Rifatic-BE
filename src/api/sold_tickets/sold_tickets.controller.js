@@ -6,8 +6,6 @@ const { ObjectId } = require("mongoose").Types;
 module.exports = {
   async sellTickets(req, res) {
     try {
-      console.log({ ...req.body, ...req.user });
-
       if (req.user.state === "inactive") {
         throw new Error("user disabled ");
       }
@@ -50,8 +48,6 @@ module.exports = {
       giveaway.sold_tickets.unshift(...soldNumbers.map((ticket) => ticket._id));
       await giveaway.save();
 
-      console.log(recordsList);
-
       res.status(200).json({
         message: "tickets sold",
         response: soldNumbers,
@@ -67,10 +63,43 @@ module.exports = {
 
   async releaseTicket(req, res) {
     try {
-      console.log("we are fucking here");
+      if (req.user.state === "inactive") {
+        throw new Error("user disabled ");
+      }
+
+      const userRaffle = await users.findOne({
+        _id: new ObjectId(req.user.id), // Verifica que el documento corresponde al usuario autenticado
+        giveaways: { $in: [new ObjectId(req.body.raffle_id)] }, // Verifica que el raffle_id está en el array de giveaways
+      });
+
+      if (!userRaffle) {
+        throw new Error("No matching raffle found for this user.");
+      }
+
+      const existingTicket = await soldTickets.findOne({
+        giveaway: new ObjectId(req.body.raffle_id),
+        selected_number: { $in: req.body.selected_number.number },
+      });
+
+      if (!existingTicket) {
+        return res.status(400).json({
+          message: "The ticket has not been sold",
+        });
+      }
+
+      const deletedTicket = await soldTickets.deleteOne({
+        _id: existingTicket._id,
+      });
+
+      if (deletedTicket.deletedCount === 0) {
+        return res.status(400).json({
+          message: "No ticket was deleted",
+        });
+      }
 
       res.status(200).json({
         message: "tickets released",
+        deleted_data: existingTicket,
       });
     } catch (error) {
       console.log(error);
