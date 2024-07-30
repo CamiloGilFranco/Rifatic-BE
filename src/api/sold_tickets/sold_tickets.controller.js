@@ -97,6 +97,11 @@ module.exports = {
         });
       }
 
+      await giveaways.updateOne(
+        { _id: new ObjectId(req.body.raffle_id) },
+        { $pull: { sold_tickets: existingTicket._id } }
+      );
+
       res.status(200).json({
         message: "tickets released",
         deleted_data: existingTicket,
