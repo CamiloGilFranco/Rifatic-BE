@@ -37,9 +37,7 @@ module.exports = {
         throw new Error("operation not allowed");
       }
 
-      const userData = await users
-        .findOne({ path })
-        .populate({ path: "giveaways", select: "-user" });
+      const userData = await users.findOne({ path });
 
       res.status(200).json({
         message: "user found",
@@ -50,7 +48,6 @@ module.exports = {
           state: userData.state,
           role: userData.role,
           email: userData.email,
-          giveaways: userData.giveaways,
         },
       });
     } catch (error) {

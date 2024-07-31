@@ -96,6 +96,27 @@ module.exports = {
     }
   },
 
+  async findAllGiveawaysPerUser(req, res) {
+    try {
+      if (req.user.state === "inactive") {
+        throw new Error("user disabled ");
+      }
+
+      const allGiveaways = await giveaways.find({ user: req.user.id });
+
+      res.status(200).json({
+        message: "giveaways found",
+        giveaways: allGiveaways,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "giveaways couldn't be found",
+        data: error.message,
+      });
+    }
+  },
+
   async updateStateGiveaway(req, res) {
     try {
       const { id, state } = req.body;
