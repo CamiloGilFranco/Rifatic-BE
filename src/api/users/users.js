@@ -5,7 +5,8 @@ const usersController = require("./users.controller");
 const router = Router();
 
 router.get("/", auth, usersController.findAllUsers);
-router.get("/path", auth, usersController.findUserByPath);
+router.get("/get-user-info", auth, usersController.findUserByEmail);
+router.get("/verify-log", auth, usersController.verifyLog);
 router.put("/deactivate", auth, usersController.deactivateUser);
 router.put("/reactivate", auth, usersController.reactivateUser);
 router.put("/data", auth, usersController.updatePersonalData);

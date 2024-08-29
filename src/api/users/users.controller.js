@@ -26,18 +26,18 @@ module.exports = {
     }
   },
 
-  async findUserByPath(req, res) {
+  async findUserByEmail(req, res) {
     try {
       const { user } = req;
-      const { path } = req.query;
+      const { email } = req.query;
 
       const userFound = await users.findById(user.id);
 
-      if (userFound.path !== path) {
+      if (userFound.email !== email) {
         throw new Error("operation not allowed");
       }
 
-      const userData = await users.findOne({ path });
+      const userData = await users.findOne({ email });
 
       res.status(200).json({
         message: "user found",
@@ -150,6 +150,37 @@ module.exports = {
       console.log(error);
       res.status(500).json({
         message: "password couldn't be updated",
+        data: error.message,
+      });
+    }
+  },
+
+  async verifyLog(req, res) {
+    try {
+      const { user } = req;
+      const { email } = req.query;
+
+      const userFound = await users.findById(user.id);
+
+      console.log({ email, user: userFound.email });
+
+      if (email !== userFound.email) {
+        res.status(400).json({
+          message: "user not found",
+        });
+      }
+
+      res.status(200).json({
+        message: "user verified",
+        user_data: {
+          email: userFound.email,
+          role: userFound.role,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "user not found",
         data: error.message,
       });
     }
