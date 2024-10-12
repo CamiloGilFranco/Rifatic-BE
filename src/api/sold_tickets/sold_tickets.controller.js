@@ -4,6 +4,7 @@ const soldTickets = require("./sold_tickets.model");
 const { ObjectId } = require("mongoose").Types;
 
 module.exports = {
+  //#region sellTickets
   async sellTickets(req, res) {
     try {
       if (req.user.state === "inactive") {
@@ -61,6 +62,7 @@ module.exports = {
     }
   },
 
+  //#region releaseTicket
   async releaseTicket(req, res) {
     try {
       if (req.user.state === "inactive") {

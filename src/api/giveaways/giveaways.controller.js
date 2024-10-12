@@ -1,7 +1,9 @@
 const giveaways = require("./giveaways.model");
 const users = require("../users/users.model");
+const { ObjectId } = require("mongoose").Types;
 
 module.exports = {
+  //#region  createGiveaway
   async createGiveaway(req, res) {
     try {
       const { title, description, image, draw_date, lottery, show_phone } =
@@ -54,6 +56,7 @@ module.exports = {
     }
   },
 
+  //#region  findOneGiveaway
   async findOneGiveaway(req, res) {
     try {
       const { id } = req.query;
@@ -79,6 +82,7 @@ module.exports = {
     }
   },
 
+  //#region  findAllGiveaway
   async findAllGiveaways(req, res) {
     try {
       const allGiveaways = await giveaways.find();
@@ -96,6 +100,7 @@ module.exports = {
     }
   },
 
+  //#region findAllGiveawaysPerUser
   async findAllGiveawaysPerUser(req, res) {
     try {
       if (req.user.state === "inactive") {
@@ -117,6 +122,7 @@ module.exports = {
     }
   },
 
+  //#region updateStateGiveaway
   async updateStateGiveaway(req, res) {
     try {
       const { id, state } = req.body;
@@ -147,6 +153,7 @@ module.exports = {
     }
   },
 
+  //#region finishGiveaway
   async finishGiveaway(req, res) {
     try {
       const { lottery, draw_date, winning_number } = req.body;
@@ -176,6 +183,59 @@ module.exports = {
       res.status(200).json({
         message: "giveaway updated",
       });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        message: "giveaway couldn't be updated",
+        data: error.message,
+      });
+    }
+  },
+
+  //#region cancelGiveaway
+  async cancelGiveaway(req, res) {
+    if (req.user.state === "inactive") {
+      throw new Error("user disabled ");
+    }
+
+    const userRaffle = await users.findOne({
+      _id: new ObjectId(req.user.id), // Verifica que el documento corresponde al usuario autenticado
+      giveaways: { $in: [new ObjectId(req.body.raffle_id)] }, // Verifica que el raffle_id está en el array de giveaways
+    });
+
+    if (!userRaffle) {
+      return res.status(400).json({
+        message: "No matching raffle found for this user.",
+      });
+    }
+
+    const raffleData = await giveaways.findOne({ _id: req.body.raffle_id });
+
+    if (raffleData.sold_tickets.length) {
+      return res.status(400).json({
+        message: "You cannot delete raffles with assigned tickets.",
+      });
+    }
+
+    const canceledRaffle = await giveaways.deleteOne({
+      _id: req.body.raffle_id,
+    });
+
+    if (canceledRaffle.deletedCount === 0) {
+      return res.status(400).json({
+        message: "No raffle was canceled",
+      });
+    }
+
+    await users.updateOne(
+      { _id: new ObjectId(userRaffle._id) },
+      { $pull: { giveaways: req.body.raffle_id } }
+    );
+
+    res.status(200).json({
+      message: "giveaway canceled",
+    });
+    try {
     } catch (error) {
       console.log(error);
       res.status(500).json({

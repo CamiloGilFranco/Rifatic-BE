@@ -11,5 +11,6 @@ router.get("/single", giveawaysController.findOneGiveaway);
 router.get("/user", auth, giveawaysController.findAllGiveawaysPerUser);
 router.put("/state", auth, giveawaysController.updateStateGiveaway);
 router.put("/finish", auth, giveawaysController.finishGiveaway);
+router.delete("/cancel", auth, giveawaysController.cancelGiveaway);
 
 module.exports = router;
