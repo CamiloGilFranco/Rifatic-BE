@@ -194,48 +194,71 @@ module.exports = {
 
   //#region cancelGiveaway
   async cancelGiveaway(req, res) {
-    if (req.user.state === "inactive") {
-      throw new Error("user disabled ");
-    }
-
-    const userRaffle = await users.findOne({
-      _id: new ObjectId(req.user.id), // Verifica que el documento corresponde al usuario autenticado
-      giveaways: { $in: [new ObjectId(req.body.raffle_id)] }, // Verifica que el raffle_id está en el array de giveaways
-    });
-
-    if (!userRaffle) {
-      return res.status(400).json({
-        message: "No matching raffle found for this user.",
-      });
-    }
-
-    const raffleData = await giveaways.findOne({ _id: req.body.raffle_id });
-
-    if (raffleData.sold_tickets.length) {
-      return res.status(400).json({
-        message: "You cannot delete raffles with assigned tickets.",
-      });
-    }
-
-    const canceledRaffle = await giveaways.deleteOne({
-      _id: req.body.raffle_id,
-    });
-
-    if (canceledRaffle.deletedCount === 0) {
-      return res.status(400).json({
-        message: "No raffle was canceled",
-      });
-    }
-
-    await users.updateOne(
-      { _id: new ObjectId(userRaffle._id) },
-      { $pull: { giveaways: req.body.raffle_id } }
-    );
-
-    res.status(200).json({
-      message: "giveaway canceled",
-    });
     try {
+      if (req.user.state === "inactive") {
+        return res.status(403).json({ message: "User disabled." });
+      }
+
+      const raffleId = req.body.raffle_id;
+      if (!raffleId) {
+        return res.status(400).json({ message: "Raffle ID is required." });
+      }
+
+      const objectRaffleId = new ObjectId(raffleId);
+
+      const userRaffle = await users.findOne({
+        _id: new ObjectId(req.user.id), // Verifica que el documento corresponde al usuario autenticado
+        giveaways: { $in: [objectRaffleId] }, // Verifica que el raffle_id está en el array de giveaways
+      });
+
+      if (!userRaffle) {
+        return res.status(404).json({
+          message: "No matching raffle found for this user.",
+        });
+      }
+
+      const raffleData = await giveaways.findOne({ _id: objectRaffleId });
+
+      if (raffleData.sold_tickets.length > 0) {
+        return res.status(400).json({
+          message: "You cannot delete raffles with assigned tickets.",
+        });
+      }
+
+      // Iniciar una transacción para eliminar la rifa y actualizar el usuario
+      const session = await mongoose.startSession();
+      session.startTransaction();
+
+      try {
+        const canceledRaffle = await giveaways.deleteOne(
+          { _id: objectRaffleId },
+          { session }
+        );
+
+        if (canceledRaffle.deletedCount === 0) {
+          await session.abortTransaction();
+          return res.status(400).json({ message: "No raffle was canceled." });
+        }
+
+        // Actualizar el documento del usuario
+        await users.updateOne(
+          { _id: new ObjectId(userRaffle._id) },
+          { $pull: { giveaways: raffleId } },
+          { session }
+        );
+
+        // Confirmar la transacción
+        await session.commitTransaction();
+        session.endSession();
+
+        res.status(200).json({ message: "Giveaway canceled successfully." });
+      } catch (error) {
+        await session.abortTransaction();
+
+        session.endSession();
+
+        throw error;
+      }
     } catch (error) {
       console.log(error);
       res.status(500).json({
