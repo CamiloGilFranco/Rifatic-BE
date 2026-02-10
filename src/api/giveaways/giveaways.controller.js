@@ -6,11 +6,31 @@ module.exports = {
   //#region  createGiveaway
   async createGiveaway(req, res) {
     try {
-      const { title, description, image, draw_date, lottery, show_phone } =
-        req.body;
-
-      const ticket_price = parseInt(req.body.ticket_price);
-      const number_of_digits = parseInt(req.body.number_of_digits);
+      const {
+        raffleType,
+        title,
+        image,
+        description,
+        lottery,
+        drawDate,
+        numberOfDigits,
+        ticketPrice,
+        showPhone,
+        socialMediaUrl,
+        winnersNumber,
+        substitutesNumber,
+        commentContent,
+        limitDate,
+        multipleParticipations,
+        validateFollows,
+        mentionsNumber,
+        //listType,
+        //participantsList,
+        //sweeten,
+        //sweetenFrequency,
+        //minimumPrice,
+        AddOrganizerName,
+      } = req.body;
 
       if (req.user.state === "inactive") {
         throw new Error("user disabled ");
@@ -27,15 +47,29 @@ module.exports = {
       }
 
       const newGiveaway = await giveaways.create({
+        raffle_type: raffleType,
         title,
-        description,
         image,
-        type: "raffle",
-        draw_date,
-        ticket_price,
-        number_of_digits,
+        description,
         lottery,
-        show_phone,
+        draw_date: drawDate && new Date(drawDate),
+        number_of_digits: numberOfDigits && parseInt(numberOfDigits),
+        ticket_price: ticketPrice && parseInt(ticketPrice),
+        show_phone: showPhone,
+        social_media_url: socialMediaUrl,
+        winners_number: winnersNumber && parseInt(winnersNumber),
+        substitutes_number: substitutesNumber && parseInt(substitutesNumber),
+        comment_content: commentContent,
+        limit_date: limitDate,
+        multiple_participations: multipleParticipations,
+        validate_follows: validateFollows,
+        mentions_number: mentionsNumber && parseInt(mentionsNumber),
+        //list_type: listType,
+        //participants_list: participantsList,
+        //sweeten: sweeten,
+        //sweeten_frequency: sweetenFrequency,
+        //minimum_price: minimumPrice,
+        organizer_name: AddOrganizerName,
         state: "in progress",
         user: req.user.id,
       });
